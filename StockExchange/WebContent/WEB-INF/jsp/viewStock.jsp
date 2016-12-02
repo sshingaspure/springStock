@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
 	pageEncoding="ISO-8859-1"%>
-	
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 
@@ -16,12 +16,15 @@
 	<hr size="4" color="gray" />
 	<h2>${message}</h2>
 	<table>
-
+		<tr>
+			<td>Company Name</td>
+			<td>Shares Number</td>
+		</tr>
 		<c:forEach items="${listShares}" var="list">
-				<tr>
-					<td>Company Name: <c:out value="${list.cmp_name}" /></td>
-					<td>Shares Number: <c:out value="${list.share_num}" /></td>
-				</tr>
+			<tr>
+				<td> <c:out value="${list.cmp_name}" /></td>
+				<td> <c:out value="${list.share_num}" /></td>
+			</tr>
 		</c:forEach>
 
 	</table>
