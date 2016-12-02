@@ -6,15 +6,25 @@
 </head>
 <body>
 
-<c:if test="${empty customer}">
-    <h1>You will have to login first</h1>
-</c:if>
+	<c:if test="${empty customer}">
+		<h1>You will have to login first</h1>
+	</c:if>
 
 	<h1>${customer.customerName}</h1>
 	<h2>${message}</h2>
 
-	<a href="viewStock">Check Stock</a>
-	<a href="buySellStock.jsp">Buy or Sell Stock</a>
+	<table>
+		<tr>
+			<td><a href="viewStock">Check Stock</a></td>
+			<td><a href="buySellStock.jsp">Buy or Sell Stock</a></td>
+			<td><a href="viewCompanies">View Companies</a></td>
+		</tr>
+		<tr></tr>
+		<tr></tr>
+		<tr>
+			<td><a href="logout">Logout</a></td>
+		</tr>
 
+	</table>
 </body>
 </html>

@@ -1,14 +1,13 @@
 package com.stockDAO;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
 import javax.sql.DataSource;
 
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 
+import com.stockBeans.Company;
 import com.stockBeans.Customer;
 import com.stockBeans.Shares;
 
@@ -77,4 +76,21 @@ public class StackJDBCTemplate implements StockDAO {
 		
 
 	}
+	
+	public List<Company>listCompanies() {
+		String sql = "select * from company";
+		
+		List<Company> list=null;
+		try {
+			 list=jdbcTemplateObject.query(sql,new BeanPropertyRowMapper(Company.class));
+			 
+			return list;
+		} catch (Exception e) {
+			System.out.println("Error occured: "+e.getMessage());
+			return list;
+		}
+		
+
+	}
+	
 }

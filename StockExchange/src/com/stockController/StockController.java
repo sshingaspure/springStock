@@ -14,21 +14,32 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.stockBeans.Company;
 import com.stockBeans.Customer;
 import com.stockBeans.Shares;
 import com.stockDAO.StackJDBCTemplate;
 
 @Controller
-@Scope(value="session")
+@Scope(value = "session")
 public class StockController {
 
 	@Autowired
 	private StackJDBCTemplate jdbcTemplate;
-	
+
 	private HttpSession session;
-	
+
 	@RequestMapping("/login")
 	public ModelAndView helloWorld(HttpServletRequest request, HttpServletResponse res) {
+		if (session != null) {
+			Customer customer = (Customer) session.getAttribute("loggedUser");
+			ModelAndView modelAndView = new ModelAndView();
+			modelAndView.setViewName("firstPage");
+			modelAndView.addObject("message", "Hello " + customer.getCustomerName());
+			modelAndView.addObject("customer", customer);
+
+			return modelAndView;
+
+		}
 		String userName = request.getParameter("name");
 		String password = request.getParameter("password");
 
@@ -40,7 +51,7 @@ public class StockController {
 			modelAndView.setViewName("firstPage");
 			modelAndView.addObject("message", message);
 			modelAndView.addObject("customer", customer);
-			session=request.getSession();
+			session = request.getSession();
 			session.setAttribute("loggedUser", customer);
 			return modelAndView;
 		} else {
@@ -55,10 +66,13 @@ public class StockController {
 
 	@RequestMapping(value = "/viewStock", method = RequestMethod.GET)
 	public ModelAndView viewStock(ModelMap model) {
-		if (session==null) {
+
+		if (session == null) {
 			return new ModelAndView("index", "message", "You must login to view this page");
 		}
+
 		Customer customer = (Customer) session.getAttribute("loggedUser");
+
 		if (customer == null) {
 			return new ModelAndView("index", "message", "You must login to view this page");
 		}
@@ -70,9 +84,29 @@ public class StockController {
 			return new ModelAndView("viewStock", "listShares", list);
 		} else {
 			System.out.println("size of list is :" + list.size());
-			return new ModelAndView("viewStock", "message", "To shares information is present");
+			return new ModelAndView("viewStock", "message", "No shares information is present");
 		}
 
+	}
+
+	@RequestMapping(value = "/logout", method = RequestMethod.GET)
+	public String logout(ModelMap model) {
+		if (session != null) {
+			session.invalidate();
+			session = null;
+		}
+
+		return "redirect:index";
+	}
+
+	@RequestMapping(value = "/viewCompanies", method = RequestMethod.GET)
+	public ModelAndView viewCompanies(ModelMap model) {
+		List<Company> companies = jdbcTemplate.listCompanies();
+		if (companies.size() != 0) {
+			return new ModelAndView("viewCompany", "companyList", companies);
+		} else {
+			return new ModelAndView("viewCompany", "message", "No shares information is present");
+		}
 	}
 
 }
