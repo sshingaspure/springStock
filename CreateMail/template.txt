@@ -1,0 +1,25 @@
+Hi Himanshu,
+         
+We received <<numOfFiles>> files for LiveVox Daily Import on IBC HCR PROD server. Please find details below:
+ 
+File Name	No. of Records	Comment
+<<table>>
+ 
+We have loaded all the files with proper data. Please find the details below:
+ 
+<<stats>>
+
+We generated the “Daily Transaction” and “Notes” extract. Please find details below:
+ 
+Daily Transaction Extract Location:  
+<<dailyExtractFiles>>
+
+Notes Extract Location:
+<<noteExtractFiles>>
+                                                             
+For Information: As touchpoints created by LiveVox Daily Result load are of date <<dates>>, we have manually generated the Daily Transaction Feed extract and Note extract for dates <<dates>>.
+ 
+Please let us know if more information is required.
+
+Thanks and Regards,
+  Sagar Hingaspure
