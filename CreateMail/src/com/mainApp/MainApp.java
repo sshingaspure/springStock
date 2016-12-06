@@ -1,8 +1,10 @@
 package com.mainApp;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -32,10 +34,10 @@ public class MainApp {
 		StringBuilder stats=new StringBuilder();
 		
 		for (Map<String, String> map : statistics) {
-			table.append(map.get("FileName").split("/")[6]+"\t"+map.get("Total Record")+"\t"+"File looks good"+"\n");
-			stats.append("FileName: "+map.get("FileName")+"\n"+"Total Record: "+map.get("Total Record")+"\n"+"Success Record: "+map.get("Success Record")
-					+"\n"+"Record Rejected: "+map.get("Record Rejected")+"\n\n"+"Error File: /home/bconnected/bc3_import/IBC_Reform/LiveVoxDailyResultLoad/error_"
-					+map.get("FileName").split("/")[6]+".processed"+"\n\n");
+			table.append("<tr><td>"+map.get("FileName").split("/")[6]+"&nbsp</td><td>"+map.get("Total Record")+"</td><td>"+"File looks good"+"&nbsp</td></tr>");
+			stats.append("<b>FileName: </b>"+map.get("FileName")+"<br>"+"<b>Total Record: </b>"+map.get("Total Record")+"<br>"+"<b>Success Record: </b>"+map.get("Success Record")
+					+"<br>"+"<b>Record Rejected: </b>"+map.get("Record Rejected")+"<br><br>"+"<b>Error File: </b>/home/bconnected/bc3_import/IBC_Reform/LiveVoxDailyResultLoad/error_"
+					+map.get("FileName").split("/")[6]+".processed"+"<br><br>");
 		}
 		
 		StringBuilder dailyExtractFiles=new StringBuilder();
@@ -52,8 +54,8 @@ public class MainApp {
 		
 		int count=1;
 		for (String string : set) {
-			dailyExtractFiles.append(count+") "+"/home/bconnected/bc3_export/IBC_Reform/DailyTransactionFeed/IBC_AHNJ_Daily_Transaction_File_"+string+".txt"+"\n");
-			noteExtractFiles.append(count+") "+"/home/bconnected/bc3_export/IBC_Reform/NoteExtract/Note_Extract_"+string+".txt"+"\n");
+			dailyExtractFiles.append(count+") "+"/home/bconnected/bc3_export/IBC_Reform/DailyTransactionFeed/IBC_AHNJ_Daily_Transaction_File_"+string+".txt"+"<br>");
+			noteExtractFiles.append(count+") "+"/home/bconnected/bc3_export/IBC_Reform/NoteExtract/Note_Extract_"+string+".txt"+"<br>");
 			if (count==set.size()-1) {
 				dates.append(string.substring(0, 2)+"/"+string.substring(2, 4)+" and ");	
 			}else if(count==set.size()){
@@ -80,7 +82,7 @@ public class MainApp {
 			String line=new String();
 			while((line=reader.readLine())!=null){
 				templateData.append(line);
-				templateData.append("\n");
+				templateData.append("<br>");
 			}
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
@@ -99,6 +101,26 @@ public class MainApp {
 		mailData=mailData.replaceAll("<<dates>>", new String(dates));
 		
 		System.out.println(mailData);
+		BufferedWriter writer=null;
+		try {
+		    writer=new BufferedWriter(new FileWriter("mail.html"));
+			writer.write(mailData);
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		finally {
+            //Close the BufferedWriter
+            try {
+                if (writer != null) {
+                	writer.flush();
+                	writer.close();
+                }
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        }
 		
 		
 	}
@@ -113,6 +135,7 @@ public class MainApp {
 		while ((line = reader.readLine()) != null) {
 			switch (line) {
 			case "EOF":
+				statistics.add(map);
 				return statistics;
 
 			case "\n":

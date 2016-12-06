@@ -16,7 +16,7 @@
 	<table>
 		<tr>
 			<td><a href="viewStock">Check Stock</a></td>
-			<td><a href="buySellStock.jsp">Buy or Sell Stock</a></td>
+			<td><a href="buySellStock">Buy or Sell Stock</a></td>
 			<td><a href="viewCompanies">View Companies</a></td>
 		</tr>
 		<tr></tr>

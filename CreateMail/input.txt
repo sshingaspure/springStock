@@ -1,25 +1,10 @@
-FileName : /home/bconnected/bc3_import/IBC_Reform/LiveVoxDailyResultLoad/IBC_LiveVox_Results_12022016_29804105_Sales.txt
-Total Record: 2603
-Success Record: 2530
-Record Rejected: 73
+FileName : /home/bconnected/bc3_import/IBC_Reform/LiveVoxDailyResultLoad/IBC_LiveVox_Results_12022016_29813582_Sales.txt
+Total Record: 6166
+Success Record: 6007
+Record Rejected: 159
 
-FileName : /home/bconnected/bc3_import/IBC_Reform/LiveVoxDailyResultLoad/IBC_LiveVox_Results_12022016_29804620_Sales.txt
-Total Record: 1427
-Success Record: 1380
-Record Rejected: 47
-
-FileName : /home/bconnected/bc3_import/IBC_Reform/LiveVoxDailyResultLoad/IBC_LiveVox_Results_12012016_29786325_Sales.txt
-Total Record: 2039
-Success Record: 1966
-Record Rejected: 73
-
-FileName : /home/bconnected/bc3_import/IBC_Reform/LiveVoxDailyResultLoad/IBC_LiveVox_Results_12012016_29778232_Sales.txt
-Total Record: 8967
-Success Record: 8733
-Record Rejected: 234
-
-FileName : /home/bconnected/bc3_import/IBC_Reform/LiveVoxDailyResultLoad/IBC_LiveVox_Results_12022016_29804020_Sales.txt
-Total Record: 2764
-Success Record: 2654
-Record Rejected: 110
+FileName : /home/bconnected/bc3_import/IBC_Reform/LiveVoxDailyResultLoad/IBC_LiveVox_Results_12032016_29833339_Sales.txt
+Total Record: 5840
+Success Record: 5709
+Record Rejected: 131
 EOF

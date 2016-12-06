@@ -39,4 +39,13 @@ public class Customer {
 		this.balance = balance;
 	}
 
+	@Override
+	public String toString() {
+		return "Customer [CustomerId=" + CustomerId + ", customerName=" + customerName + ", username=" + username
+				+ ", balance=" + balance + "]";
+	}
+	
+	
+	
+
 }

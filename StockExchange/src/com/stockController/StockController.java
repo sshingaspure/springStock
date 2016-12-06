@@ -12,6 +12,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.stockBeans.Company;
@@ -40,6 +42,7 @@ public class StockController {
 			return modelAndView;
 
 		}
+		
 		String userName = request.getParameter("name");
 		String password = request.getParameter("password");
 
@@ -109,4 +112,51 @@ public class StockController {
 		}
 	}
 
+	@RequestMapping(value = "/buySellStock", method = RequestMethod.GET)
+	public ModelAndView buySellStock(ModelMap model) {
+		Customer customer = (Customer) session.getAttribute("loggedUser");
+		ModelAndView modelAndView = new ModelAndView();
+		modelAndView.setViewName("trading");
+		System.out.println(customer.toString());
+		
+		modelAndView.addObject("customer", customer);
+		modelAndView.addObject("companyList", jdbcTemplate.listCompanies());
+
+		return modelAndView;
+	}
+
+	// getNumberOfShares
+
+	@RequestMapping(value = "/getNumberOfShares", method = RequestMethod.GET)
+	public @ResponseBody String getNumberOfShares(@RequestParam String custid, @RequestParam String cmpid) {
+		String cust_id = custid;
+		String cmp_id = cmpid;
+
+		int num = jdbcTemplate.getShareNumbers(cust_id, cmp_id);
+		System.out.println("Number of shares: "+num);
+		return new String(""+num);
+	}
+
+	
+	@RequestMapping("/buyStocksForCompany")
+	public ModelAndView buyStocksForCompany(HttpServletRequest request, HttpServletResponse res) {
+		if (session == null) {
+			return new ModelAndView("index", "message", "You must login to view this page");
+		}
+
+		Customer customer = (Customer) session.getAttribute("loggedUser");
+
+		if (customer == null) {
+			return new ModelAndView("index", "message", "You must login to view this page");
+		}
+		
+		
+		String companyString = request.getParameter("companyName");
+		int cmpID=new Integer(companyString.split(",")[0]);
+		
+		String numOfSharestoBuy = request.getParameter("numOfSharestoBuy");
+		String shareValue = request.getParameter("shareValue");
+		return null;
+
+	}
 }

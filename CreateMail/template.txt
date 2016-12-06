@@ -1,25 +1,22 @@
-Hi Himanshu,
-         
+<body style="font-size: 11pt;" >
+<font face="Calibri" color="#1f497d">Hi Himanshu,
+
 We received <<numOfFiles>> files for LiveVox Daily Import on IBC HCR PROD server. Please find details below:
- 
-File Name	No. of Records	Comment
-<<table>>
- 
+<table bordercolor="#1f497d" border="1" style="border-collapse:collapse; color:#1f497d; font-family:Calibri; font-size: 11pt;">
+<tr bgcolor="#C0C0C0"><th align="left" width="400px">File Name</th><th align="left" width="200px">No. of Records&nbsp&nbsp</th><th align="left" width="200px">Comment</th></tr>
+<<table>></table>
 We have loaded all the files with proper data. Please find the details below:
  
-<<stats>>
+<<stats>>We generated the “Daily Transaction” and “Notes” extract. Please find details below:
 
-We generated the “Daily Transaction” and “Notes” extract. Please find details below:
- 
-Daily Transaction Extract Location:  
+<b>Daily Transaction Extract Location:</b>
 <<dailyExtractFiles>>
-
-Notes Extract Location:
-<<noteExtractFiles>>
-                                                             
-For Information: As touchpoints created by LiveVox Daily Result load are of date <<dates>>, we have manually generated the Daily Transaction Feed extract and Note extract for dates <<dates>>.
+<b>Notes Extract Location:</b>
+<<noteExtractFiles>>                                                             
+<b>For Information:</b> As touchpoints created by LiveVox Daily Result load are of date <<dates>>, we have manually generated the Daily Transaction Feed extract and Note extract for dates <<dates>>.
  
 Please let us know if more information is required.
 
 Thanks and Regards,
   Sagar Hingaspure
+</font></body>
