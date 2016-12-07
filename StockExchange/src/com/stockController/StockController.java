@@ -140,6 +140,7 @@ public class StockController {
 	
 	@RequestMapping("/buyStocksForCompany")
 	public ModelAndView buyStocksForCompany(HttpServletRequest request, HttpServletResponse res) {
+		
 		if (session == null) {
 			return new ModelAndView("index", "message", "You must login to view this page");
 		}
@@ -150,13 +151,47 @@ public class StockController {
 			return new ModelAndView("index", "message", "You must login to view this page");
 		}
 		
+
 		
-		String companyString = request.getParameter("companyName");
+		String companyString = request.getParameter("cmpname");
+		System.out.println(companyString);
 		int cmpID=new Integer(companyString.split(",")[0]);
+		System.out.println("cmpID: "+cmpID);
 		
-		String numOfSharestoBuy = request.getParameter("numOfSharestoBuy");
-		String shareValue = request.getParameter("shareValue");
-		return null;
+		int numOfSharestoBuy =new Integer(request.getParameter("numofshare"));
+		
+		Company company=jdbcTemplate.getCompany(cmpID);
+		System.out.println(company.toString());
+		double shareValue=company.getShare_value();
+		double balance=customer.getBalance();
+		double requiredAmount=shareValue*numOfSharestoBuy;
+		
+		ModelAndView modelAndView = new ModelAndView();
+		modelAndView.setViewName("trading");
+		
+		if (balance >= requiredAmount) {
+			boolean success=jdbcTemplate.buyShres(customer.getCustomerId(),company.getCmp_id(),numOfSharestoBuy);
+			System.out.println("out put from jdbc: "+success);
+			if (success) {
+				modelAndView.addObject("customer", jdbcTemplate.getCustomer(customer.getCustomerId()));
+				List<Company> companies=jdbcTemplate.listCompanies();
+				for (Company company2 : companies) {
+					System.out.println(company2);
+				}
+				modelAndView.addObject("companyList", jdbcTemplate.listCompanies());
+				modelAndView.addObject("message", "Successfully bought the shares");
+			}else {		
+				modelAndView.addObject("customer", jdbcTemplate.getCompany(customer.getCustomerId()));
+				List<Company> companies=jdbcTemplate.listCompanies();
+				for (Company company2 : companies) {
+					System.out.println(company2);
+				}
+				modelAndView.addObject("companyList", companies);
+				modelAndView.addObject("message", "Error while transaction. Please try again");
+			}
+		}
+		
+		return modelAndView;
 
 	}
 }

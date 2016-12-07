@@ -29,4 +29,11 @@ public class Company {
 		this.share_value = share_value;
 	}
 
+	@Override
+	public String toString() {
+		return "Company [cmp_id=" + cmp_id + ", cmp_name=" + cmp_name + ", share_value=" + share_value + "]";
+	}
+	
+	
+
 }

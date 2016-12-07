@@ -19,6 +19,7 @@
 	<div class="container">
 		<h2>Stock Trading</h2>
 		<p>Click on tab to buy or sell stocks</p>
+		<p>${message}</p>
 		<p id="errorMessage" style="color:red;"></p>
 		<ul class="nav nav-tabs">
 			<li class="active"><a data-toggle="tab" href="#buy">Buy
@@ -30,11 +31,11 @@
 			<div id="buy" class="tab-pane fade in active">
 				<h3>Buy stock</h3>
 
-				<form id="buyForm" action="buyStocksForCompany">
+				<form id="buyForm" action="buyStocksForCompany" method="post">
 					<table>
 						<tr>
 							<td>Select Company</td>
-							<td><select id="companyName">
+							<td><select id="companyName" name="cmpname">
 									<option value="0">select a company</option>
 									<c:forEach items="${companyList}" var="company">
 					console.log("${company.cmp_name}");
@@ -51,7 +52,7 @@
 						</tr>
 						<tr>
 							<td>Select Number of shares:</td>
-							<td><input type="text" id="numOfSharestoBuy" /></td>
+							<td><input type="text" id="numOfSharestoBuy" name="numofshare"/></td>
 							<td><input type="text" id="cmpName" disabled /></td>
 							<td><input type="text" id="shareValue" disabled /></td>
 							<td><input type="text" id="numOfShare" disabled /></td>
@@ -81,6 +82,7 @@
 							shareValue.value = "";
 							alert("Please select a company");
 						} else {
+							console.log(this.value);
 							var ss = this.value.split(',');
 							mytextbox.value = ss[1]; //to appened
 							shareValue.value = ss[2];
@@ -101,7 +103,7 @@
 								url : "getNumberOfShares",
 								data : inputData,
 								success : function(result) {
-									console.log("Result" + result);
+									console.log("Result from ajax" + result);
 									numOfShare.value = result;
 
 								}
@@ -139,7 +141,7 @@
 							return;
 						}
 						
-						
+						document.getElementById("buyForm").submit();
 					}
 				</script>
 

@@ -25,11 +25,17 @@
       <property name="username" value="root"/>
       <property name="password" value="sagar"/>
    </bean>
+   
+   <bean id="transactionManager" 
+      class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+      <property name="dataSource"  ref="dataSource" />    
+   </bean>
 
    <!-- Definition for studentJDBCTemplate bean -->
    <bean id="jdbcTemplate" 
       class="com.stockDAO.StackJDBCTemplate">
       <property name="dataSource"  ref="dataSource" />    
+      <property name="transactionManager" ref="transactionManager"/>
    </bean>
  
 </beans>

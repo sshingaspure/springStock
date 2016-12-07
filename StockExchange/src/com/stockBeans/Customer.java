@@ -2,7 +2,7 @@ package com.stockBeans;
 
 public class Customer {
 
-	private int CustomerId;
+	private int customerId;
 	private String customerName;
 	private String username;
 	private double balance;
@@ -16,11 +16,11 @@ public class Customer {
 	}
 
 	public int getCustomerId() {
-		return CustomerId;
+		return customerId;
 	}
 
 	public void setCustomerId(int customerId) {
-		CustomerId = customerId;
+		this.customerId = customerId;
 	}
 
 	public String getCustomerName() {
@@ -41,11 +41,8 @@ public class Customer {
 
 	@Override
 	public String toString() {
-		return "Customer [CustomerId=" + CustomerId + ", customerName=" + customerName + ", username=" + username
+		return "Customer [CustomerId=" + customerId + ", customerName=" + customerName + ", username=" + username
 				+ ", balance=" + balance + "]";
 	}
 	
-	
-	
-
 }
