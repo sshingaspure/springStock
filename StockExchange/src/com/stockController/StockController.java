@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.view.RedirectView;
 
 import com.stockBeans.Company;
 import com.stockBeans.Customer;
@@ -113,13 +114,25 @@ public class StockController {
 	}
 
 	@RequestMapping(value = "/buySellStock", method = RequestMethod.GET)
-	public ModelAndView buySellStock(ModelMap model) {
+	public ModelAndView buySellStock(String message) {
+		if (session == null) {
+			return new ModelAndView("index", "message", "You must login to view this page");
+		}
+
 		Customer customer = (Customer) session.getAttribute("loggedUser");
+
+		if (customer == null) {
+			return new ModelAndView("index", "message", "You must login to view this page");
+		}
+		customer=jdbcTemplate.getCustomer(customer.getCustomerId());
+		session.setAttribute("loggedUser", customer);
+		
 		ModelAndView modelAndView = new ModelAndView();
+		modelAndView.addObject("customer", customer);
+		modelAndView.addObject("message", message);
 		modelAndView.setViewName("trading");
 		System.out.println(customer.toString());
 		
-		modelAndView.addObject("customer", customer);
 		modelAndView.addObject("companyList", jdbcTemplate.listCompanies());
 
 		return modelAndView;
@@ -166,31 +179,65 @@ public class StockController {
 		double balance=customer.getBalance();
 		double requiredAmount=shareValue*numOfSharestoBuy;
 		
-		ModelAndView modelAndView = new ModelAndView();
-		modelAndView.setViewName("trading");
+		ModelAndView modelAndView = new ModelAndView(new RedirectView("buySellStock"));
 		
 		if (balance >= requiredAmount) {
 			boolean success=jdbcTemplate.buyShres(customer.getCustomerId(),company.getCmp_id(),numOfSharestoBuy);
 			System.out.println("out put from jdbc: "+success);
 			if (success) {
-				modelAndView.addObject("customer", jdbcTemplate.getCustomer(customer.getCustomerId()));
-				List<Company> companies=jdbcTemplate.listCompanies();
-				for (Company company2 : companies) {
-					System.out.println(company2);
-				}
-				modelAndView.addObject("companyList", jdbcTemplate.listCompanies());
 				modelAndView.addObject("message", "Successfully bought the shares");
 			}else {		
-				modelAndView.addObject("customer", jdbcTemplate.getCompany(customer.getCustomerId()));
-				List<Company> companies=jdbcTemplate.listCompanies();
-				for (Company company2 : companies) {
-					System.out.println(company2);
-				}
-				modelAndView.addObject("companyList", companies);
 				modelAndView.addObject("message", "Error while transaction. Please try again");
 			}
 		}
+
+		return modelAndView;
+
+	}
+	
+	
+	@RequestMapping("/sellStocksForCompany")
+	public ModelAndView sellStocksForCompany(HttpServletRequest request, HttpServletResponse res) {
 		
+		if (session == null) {
+			return new ModelAndView("index", "message", "You must login to view this page");
+		}
+
+		Customer customer = (Customer) session.getAttribute("loggedUser");
+
+		if (customer == null) {
+			return new ModelAndView("index", "message", "You must login to view this page");
+		}
+		
+
+		
+		String companyString = request.getParameter("cmpName1");
+		System.out.println(companyString);
+		int cmpID=new Integer(companyString.split(",")[0]);
+		System.out.println("cmpID: "+cmpID);
+		
+		int numOfSharestoSell =new Integer(request.getParameter("numOfSharesToSell"));
+		System.out.println(numOfSharestoSell);
+		Company company=jdbcTemplate.getCompany(cmpID);
+		System.out.println(company.toString());
+		double shareValue=company.getShare_value();
+		double balance=customer.getBalance();
+		int numberOfSharesCustHave=jdbcTemplate.getShareNumbers(new String(""+customer.getCustomerId()), new String(""+cmpID));
+		
+		ModelAndView modelAndView = new ModelAndView(new RedirectView("buySellStock"));
+		
+		if (numberOfSharesCustHave >= numOfSharestoSell) {
+			boolean success=jdbcTemplate.sellShres(customer.getCustomerId(),company.getCmp_id(),numOfSharestoSell);
+			System.out.println("out put from jdbc: "+success);
+			if (success) {
+				modelAndView.addObject("message", "Successfully Sold the shares");
+			}else {		
+				modelAndView.addObject("message", "Error while transaction. Please try again");
+			}
+		}else {
+			modelAndView.addObject("message", "Number of shares entered is less than what you have. You have only "+numberOfSharesCustHave+" shares. ");
+		}
+
 		return modelAndView;
 
 	}

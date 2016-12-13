@@ -19,8 +19,7 @@
 	<div class="container">
 		<h2>Stock Trading</h2>
 		<p>Click on tab to buy or sell stocks</p>
-		<p>${message}</p>
-		<p id="errorMessage" style="color:red;"></p>
+		<p id="errorMessage" style="color:green;">${message}</p>
 		<ul class="nav nav-tabs">
 			<li class="active"><a data-toggle="tab" href="#buy">Buy
 					Stock</a></li>
@@ -119,13 +118,18 @@
 						var strUser = cmpName.options[mydropdown.selectedIndex].value;
 						if (strUser==0) {
 							console.log("Please select company name from drop down list.");
-							$('#errorMessage').text('Please select company name from drop down list.');
+							var str='Please select company name from drop down list.';
+							var result = str.fontcolor("red");
+							document.getElementById("errorMessage").innerHTML = result;
+							
 							return;
 						}
 						var numOfSharestoBuy=document.getElementById("numOfSharestoBuy").value;
 						if (numOfSharestoBuy <= 0) {
 							console.log("Please enter valid number of shares.");
-							$('#errorMessage').text('Please valid number of shares');
+							var str='Please valid number of shares';
+							var result = str.fontcolor("red");
+							document.getElementById("errorMessage").innerHTML = result;
 							return;
 						}
 						
@@ -136,23 +140,40 @@
 						console.log("inside checkBuyCondition balanceAvailable: "+balanceAvailable);
 						if (balanceAvailable < amountRequired) {
 							console.log("inside if in checkBuyCondition");
-							errorMessage.value="Sorry, you do not have sufficient balance. Available balance: "+balanceAvailable+" Required Balance: "+amountRequired;
-							$('#errorMessage').text('Sorry, you do not have sufficient balance. Available balance: '+balanceAvailable+' Required Balance: '+amountRequired);
+							//errorMessage.value="Sorry, you do not have sufficient balance. Available balance: "+balanceAvailable+" Required Balance: "+amountRequired;
+							var str="Sorry, you do not have sufficient balance. Available balance: "+balanceAvailable+" Required Balance: "+amountRequired;
+							var result = str.fontcolor("red");
+							document.getElementById("errorMessage").innerHTML = result;
+							//$('#errorMessage').text('Sorry, you do not have sufficient balance. Available balance: '+balanceAvailable+' Required Balance: '+amountRequired);
 							return;
 						}
 						
 						document.getElementById("buyForm").submit();
 					}
 				</script>
+			
+			<table>
+		<tr>
+			<td><a href="viewStock">Check Stock</a></td>
+			<td><a href="buySellStock">Buy or Sell Stock</a></td>
+			<td><a href="viewCompanies">View Companies</a></td>
+		</tr>
+		<tr></tr>
+		<tr></tr>
+		<tr>
+			<td><a href="logout">Logout</a></td>
+		</tr>
 
+	</table>
 
 			</div>
 			<div id="sell" class="tab-pane fade">
 				<h3>Sell stock</h3>
+				<form id="sellForm" action="sellStocksForCompany" method="post">
 				<table>
 					<tr>
 						<td>Select Company</td>
-						<td><select id="companyName1">
+						<td><select id="companyName1" name="cmpName1">
 								<option value="0">select a company</option>
 								<c:forEach items="${companyList}" var="company">
 					console.log("${company.cmp_name}");
@@ -169,21 +190,20 @@
 					</tr>
 					<tr>
 						<td>Select Number of shares:</td>
-						<td><input type="text" name="numOfShares" /></td>
+						<td><input type="text" id="numOfSharesToSellId" name="numOfSharesToSell" /></td>
 						<td><input type="text" id="cmpName1" disabled /></td>
 						<td><input type="text" id="shareValue1" disabled /></td>
 						<td><input type="text" id="numOfShare1" disabled /></td>
 					</tr>
 
 					<tr>
-						<td><button type="button">Buy Shares</button></td>
-						<td></td>
-						<td><button type="button">Sell Shares</button></td>
-						<td></td>
+						
+						<td><button type="button" onclick="checkSellCondition()">Sell Shares</button></td>
+					
 					</tr>
 
-				</table>
-
+					</table>
+				</form>
 				<script type="text/javascript"
 					src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
 				<script>
@@ -227,9 +247,56 @@
 
 						}//mytextbox.innerHTML = this.value;
 					}
+					
+					function checkSellCondition(){
+						console.log("inside checkSellCondition");
+						var errorMessage=document.getElementById("errorMessage");
+						var cmpName = document.getElementById('companyName1');
+						var strUser = cmpName.options[mydropdown1.selectedIndex].value;
+						if (strUser==0) {
+							console.log("Please select company name from drop down list.");
+							var str='Please select company name from drop down list.';
+							var result = str.fontcolor("red");
+							document.getElementById("errorMessage").innerHTML = result;
+							
+							return;
+						}
+						var numOfSharestoSell=document.getElementById("numOfSharesToSellId").value;
+						if (numOfSharestoSell <= 0) {
+							console.log("Please enter valid number of shares.");
+							var str='Please enter valid number of shares';
+							var result = str.fontcolor("red");
+							document.getElementById("errorMessage").innerHTML = result;
+							return;
+						}
+						
+						
+						var numOfSharesUHave=document.getElementById('numOfShare1').value;
+						if (numOfSharesUHave < numOfSharestoSell) {
+							var str='Number of shares entered is less than what you have. You have only '+numOfSharesUHave+' shares.';
+							var result = str.fontcolor("red");
+							document.getElementById("errorMessage").innerHTML = result;
+							return;
+						} 
+						
+					 document.getElementById("sellForm").submit();
+					}
+					
 				</script>
 
+				<table>
+		<tr>
+			<td><a href="viewStock">Check Stock</a></td>
+			<td><a href="buySellStock">Buy or Sell Stock</a></td>
+			<td><a href="viewCompanies">View Companies</a></td>
+		</tr>
+		<tr></tr>
+		<tr></tr>
+		<tr>
+			<td><a href="logout">Logout</a></td>
+		</tr>
 
+	</table>
 			</div>
 		</div>
 	</div>

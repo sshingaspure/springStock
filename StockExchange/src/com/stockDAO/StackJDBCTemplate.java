@@ -155,8 +155,8 @@ public class StackJDBCTemplate implements StockDAO {
 		} catch (Exception e) {
 			System.out.println("Error occured: " + e.getMessage());
 			transactionManager.rollback(status);
+			return success;
 		}
-		
 		
 		System.out.println("updated the share successfully");
 		return success;
@@ -172,5 +172,32 @@ public class StackJDBCTemplate implements StockDAO {
 		}
 		System.out.println(customer.toString());
 		return customer;
+	}
+
+	public boolean sellShres(int customerId, int cmp_id, int numOfSharestoSell) {
+		boolean success=false;
+		
+		String sql;
+		TransactionDefinition definition=new DefaultTransactionDefinition();
+		TransactionStatus status=transactionManager.getTransaction(definition);
+		
+		try {
+			sql="select share_value from company where cmp_id=?";
+			double share_value=jdbcTemplateObject.queryForObject(sql,new Object[]{cmp_id},Double.class);
+			double amountGain=numOfSharestoSell*share_value;
+			
+			sql="update shares set shares=shares-? where cust_id=? and cmp_id=?";
+			jdbcTemplateObject.update(sql, numOfSharestoSell,customerId,cmp_id);
+			sql="update customer set balance = balance+? where cust_id=?";
+			jdbcTemplateObject.update(sql, new Object[]{amountGain,customerId});
+			transactionManager.commit(status);
+			success=true;
+		} catch (Exception e) {
+			System.out.println("Error occured: " + e.getMessage());
+			transactionManager.rollback(status);
+			return success;
+		}
+		System.out.println("Sold the share successfully");
+		return success;
 	}
 }
