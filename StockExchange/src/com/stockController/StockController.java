@@ -220,14 +220,13 @@ public class StockController {
 		System.out.println(numOfSharestoSell);
 		Company company=jdbcTemplate.getCompany(cmpID);
 		System.out.println(company.toString());
-		double shareValue=company.getShare_value();
-		double balance=customer.getBalance();
+		
 		int numberOfSharesCustHave=jdbcTemplate.getShareNumbers(new String(""+customer.getCustomerId()), new String(""+cmpID));
 		
 		ModelAndView modelAndView = new ModelAndView(new RedirectView("buySellStock"));
 		
 		if (numberOfSharesCustHave >= numOfSharestoSell) {
-			boolean success=jdbcTemplate.sellShres(customer.getCustomerId(),company.getCmp_id(),numOfSharestoSell);
+			boolean success=jdbcTemplate.sellShares(customer.getCustomerId(),company.getCmp_id(),numOfSharestoSell);
 			System.out.println("out put from jdbc: "+success);
 			if (success) {
 				modelAndView.addObject("message", "Successfully Sold the shares");

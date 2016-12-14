@@ -90,7 +90,7 @@ public class StackJDBCTemplate implements StockDAO {
 		try {
 			list = jdbcTemplateObject.query(sql, new BeanPropertyRowMapper<Company>(Company.class));
 			return list;
-			
+
 		} catch (Exception e) {
 			System.out.println("Error occured: " + e.getMessage());
 			return list;
@@ -113,11 +113,12 @@ public class StackJDBCTemplate implements StockDAO {
 	}
 
 	public Company getCompany(int cmpID) {
-		
-		String sql="select * from company where cmp_id=?";
-		Company company=null;
+
+		String sql = "select * from company where cmp_id=?";
+		Company company = null;
 		try {
-			company=(Company) jdbcTemplateObject.queryForObject(sql, new Object[]{cmpID},new BeanPropertyRowMapper<Company>(Company.class));
+			company = (Company) jdbcTemplateObject.queryForObject(sql, new Object[] { cmpID },
+					new BeanPropertyRowMapper<Company>(Company.class));
 		} catch (Exception e) {
 			System.out.println("Error occured: " + e.getMessage());
 		}
@@ -125,48 +126,54 @@ public class StackJDBCTemplate implements StockDAO {
 	}
 
 	public boolean buyShres(int customerId, int cmp_id, int numOfSharestoBuy) {
-		//String
-		boolean success=false;
+		// String
+		boolean success = false;
 		String sql;
-		TransactionDefinition definition=new DefaultTransactionDefinition();
-		TransactionStatus status=transactionManager.getTransaction(definition);
+		TransactionDefinition definition = new DefaultTransactionDefinition();
+		TransactionStatus status = transactionManager.getTransaction(definition);
+		double shareValue = 0;
 		try {
-			sql="select balance from customer where cust_id=?";
-			double balance=jdbcTemplateObject.queryForObject(sql,new Object[]{customerId},Double.class);
-			sql="select share_value from company where cmp_id=?";
-			double shareValue=jdbcTemplateObject.queryForObject(sql, new Object[]{cmp_id}, Double.class);
-			double amountRequired=shareValue*numOfSharestoBuy;
-			if (balance>=amountRequired) {
-				sql="update customer set balance = balance-? where cust_id=?";
-				jdbcTemplateObject.update(sql, new Object[]{amountRequired,customerId});
-				sql="select shares from shares where cust_id=? and cmp_id=?";
-				Integer shares=jdbcTemplateObject.queryForObject(sql, new Object[]{customerId,cmp_id},Integer.class);
-				if (shares==null) {
-					sql="insert into shares values(?,?,?)";
-					jdbcTemplateObject.update(sql, customerId,cmp_id,numOfSharestoBuy);
-				}else {
-					sql="update shares set shares=shares+? where cust_id=? and cmp_id=?";
-					jdbcTemplateObject.update(sql, numOfSharestoBuy,customerId,cmp_id);
+			sql = "select balance from customer where cust_id=?";
+			double balance = jdbcTemplateObject.queryForObject(sql, new Object[] { customerId }, Double.class);
+			sql = "select share_value from company where cmp_id=?";
+			shareValue = jdbcTemplateObject.queryForObject(sql, new Object[] { cmp_id }, Double.class);
+			double amountRequired = shareValue * numOfSharestoBuy;
+			if (balance >= amountRequired) {
+				sql = "update customer set balance = balance-? where cust_id=?";
+				jdbcTemplateObject.update(sql, new Object[] { amountRequired, customerId });
+				sql = "select shares from shares where cust_id=? and cmp_id=?";
+				Integer shares = jdbcTemplateObject.queryForObject(sql, new Object[] { customerId, cmp_id },
+						Integer.class);
+				if (shares == null) {
+					sql = "insert into shares values(?,?,?)";
+					jdbcTemplateObject.update(sql, customerId, cmp_id, numOfSharestoBuy);
+				} else {
+					sql = "update shares set shares=shares+? where cust_id=? and cmp_id=?";
+					jdbcTemplateObject.update(sql, numOfSharestoBuy, customerId, cmp_id);
 				}
 			}
-			
+			addTransactionDetails(customerId, cmp_id, shareValue, numOfSharestoBuy, "B", "Successful",
+					"Successfully bought the shares");
 			transactionManager.commit(status);
-			success=true;
+			success = true;
 		} catch (Exception e) {
 			System.out.println("Error occured: " + e.getMessage());
 			transactionManager.rollback(status);
+			addTransactionDetails(customerId, cmp_id, shareValue, numOfSharestoBuy, "B", "Unsuccessful",
+					"Error occured: " + e.getMessage());
 			return success;
 		}
-		
+
 		System.out.println("updated the share successfully");
 		return success;
 	}
 
-	public Customer getCustomer(int cust_id){
-		String sql="select * from customer where cust_id=?";
-		Customer customer=null;
+	public Customer getCustomer(int cust_id) {
+		String sql = "select * from customer where cust_id=?";
+		Customer customer = null;
 		try {
-			customer=(Customer) jdbcTemplateObject.queryForObject(sql, new Object[]{cust_id},new CustomerMapper());
+			customer = (Customer) jdbcTemplateObject
+					.queryForObject(sql, new Object[] { cust_id }, new CustomerMapper());
 		} catch (Exception e) {
 			System.out.println("Error occured: " + e.getMessage());
 		}
@@ -174,30 +181,43 @@ public class StackJDBCTemplate implements StockDAO {
 		return customer;
 	}
 
-	public boolean sellShres(int customerId, int cmp_id, int numOfSharestoSell) {
-		boolean success=false;
-		
+	public boolean sellShares(int customerId, int cmp_id, int numOfSharestoSell) {
+		boolean success = false;
+
 		String sql;
-		TransactionDefinition definition=new DefaultTransactionDefinition();
-		TransactionStatus status=transactionManager.getTransaction(definition);
-		
+		TransactionDefinition definition = new DefaultTransactionDefinition();
+		TransactionStatus status = transactionManager.getTransaction(definition);
+		double share_value = 0;
 		try {
-			sql="select share_value from company where cmp_id=?";
-			double share_value=jdbcTemplateObject.queryForObject(sql,new Object[]{cmp_id},Double.class);
-			double amountGain=numOfSharestoSell*share_value;
-			
-			sql="update shares set shares=shares-? where cust_id=? and cmp_id=?";
-			jdbcTemplateObject.update(sql, numOfSharestoSell,customerId,cmp_id);
-			sql="update customer set balance = balance+? where cust_id=?";
-			jdbcTemplateObject.update(sql, new Object[]{amountGain,customerId});
+			sql = "select share_value from company where cmp_id=?";
+			share_value = jdbcTemplateObject.queryForObject(sql, new Object[] { cmp_id }, Double.class);
+			double amountGain = numOfSharestoSell * share_value;
+
+			sql = "update shares set shares=shares-? where cust_id=? and cmp_id=?";
+			jdbcTemplateObject.update(sql, numOfSharestoSell, customerId, cmp_id);
+			sql = "update customer set balance = balance+? where cust_id=?";
+			jdbcTemplateObject.update(sql, new Object[] { amountGain, customerId });
+
+			addTransactionDetails(customerId, cmp_id, share_value, numOfSharestoSell, "S", "Successful",
+					"Successfully sold the shares");
 			transactionManager.commit(status);
-			success=true;
+			success = true;
+			System.out.println("Sold the share successfully");
 		} catch (Exception e) {
 			System.out.println("Error occured: " + e.getMessage());
 			transactionManager.rollback(status);
+			addTransactionDetails(customerId, cmp_id, share_value, numOfSharestoSell, "S", "Unsuccessful",
+					"Error occured: " + e.getMessage());
 			return success;
 		}
-		System.out.println("Sold the share successfully");
+
 		return success;
+	}
+
+	private void addTransactionDetails(int customerId, int cmp_id, double share_value, int numOfSharestoSell,
+			String type, String status, String message) {
+		String sql = "INSERT INTO transactions(cust_id,cmp_id,share_value_at_tran,number_of_shares,tran_type,tran_status,tran_message)"
+				+ " VALUES(?,?,?,?,?,?,?)";
+		jdbcTemplateObject.update(sql, customerId, cmp_id, share_value, numOfSharestoSell, type, status, message);
 	}
 }
