@@ -63,7 +63,7 @@ CREATE TABLE `customer` (
 
 LOCK TABLES `customer` WRITE;
 /*!40000 ALTER TABLE `customer` DISABLE KEYS */;
-INSERT INTO `customer` VALUES (1,'sagar','sagar','sagar',3980.00),(2,'parag','parag','parag',10000.00),(3,'sa\r\nsa\r\n','sa','sa',10000.00);
+INSERT INTO `customer` VALUES (1,'sagar','sagar','sagar',4932.00),(2,'parag','parag','parag',10000.00),(3,'sa\r\nsa\r\n','sa','sa',10000.00);
 /*!40000 ALTER TABLE `customer` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -91,7 +91,7 @@ CREATE TABLE `shares` (
 
 LOCK TABLES `shares` WRITE;
 /*!40000 ALTER TABLE `shares` DISABLE KEYS */;
-INSERT INTO `shares` VALUES (1,1,12),(1,2,35);
+INSERT INTO `shares` VALUES (1,1,36),(1,2,18);
 /*!40000 ALTER TABLE `shares` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -116,6 +116,40 @@ LOCK TABLES `timecheck` WRITE;
 INSERT INTO `timecheck` VALUES ('2016-12-12 00:00:00');
 /*!40000 ALTER TABLE `timecheck` ENABLE KEYS */;
 UNLOCK TABLES;
+
+--
+-- Table structure for table `transactions`
+--
+
+DROP TABLE IF EXISTS `transactions`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `transactions` (
+  `tran_id` int(11) NOT NULL AUTO_INCREMENT,
+  `cust_id` int(11) NOT NULL,
+  `cmp_id` int(11) NOT NULL,
+  `share_value_at_tran` double(10,2) NOT NULL,
+  `number_of_shares` int(10) NOT NULL,
+  `tran_type` enum('S','B') NOT NULL,
+  `tran_status` varchar(20) NOT NULL,
+  `tran_message` varchar(100) DEFAULT NULL,
+  PRIMARY KEY (`tran_id`),
+  KEY `tran_fk_1` (`cust_id`),
+  KEY `tran_fk_2` (`cmp_id`),
+  CONSTRAINT `tran_fk_1` FOREIGN KEY (`cust_id`) REFERENCES `customer` (`cust_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `tran_fk_2` FOREIGN KEY (`cmp_id`) REFERENCES `company` (`cmp_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `transactions`
+--
+
+LOCK TABLES `transactions` WRITE;
+/*!40000 ALTER TABLE `transactions` DISABLE KEYS */;
+INSERT INTO `transactions` VALUES (1,1,1,1002.00,12,'S','Successful','Succesfully sold the shares'),(2,1,1,1002.00,12,'S','Successful','Succesfully sold the shares'),(3,1,1,102.00,1,'B','Successful','Successfully bought the shares'),(4,1,1,102.00,10,'S','Successful','Successfully sold the shares'),(5,1,1,102.00,2,'S','Successful','Successfully sold the shares'),(6,1,2,200.00,1,'B','Successful','Successfully bought the shares'),(7,1,2,200.00,2,'B','Successful','Successfully bought the shares'),(8,1,2,200.00,2,'S','Successful','Successfully sold the shares');
+/*!40000 ALTER TABLE `transactions` ENABLE KEYS */;
+UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -126,4 +160,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2016-12-10 22:25:54
+-- Dump completed on 2016-12-14 18:56:19
