@@ -220,4 +220,23 @@ public class StackJDBCTemplate implements StockDAO {
 				+ " VALUES(?,?,?,?,?,?,?)";
 		jdbcTemplateObject.update(sql, customerId, cmp_id, share_value, numOfSharestoSell, type, status, message);
 	}
+
+	public List<Transactions> listTransactions(int cust_id) {
+		String sql = "SELECT t.tran_id,t.cust_id,c.cmp_name,t.share_value_at_tran,t.number_of_shares,t.tran_type,t.tran_status,t.tran_message"
+				 +" FROM transactions t INNER JOIN company c ON t.cmp_id=c.cmp_id WHERE t.cust_id=?";
+
+		List<Transactions> transactions = null;
+		try {
+			transactions = jdbcTemplateObject.query(sql, new Object[] { cust_id }, new BeanPropertyRowMapper<Transactions>(Transactions.class));
+			
+			for (Transactions transactions2 : transactions) {
+				System.out.println(transactions2.toString());
+			}	
+			return transactions;
+		} catch (Exception e) {
+			System.out.println("Error occured: " + e.getMessage());
+			return transactions;
+		}
+	
+	}
 }

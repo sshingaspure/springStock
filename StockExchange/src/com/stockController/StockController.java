@@ -21,6 +21,7 @@ import com.stockBeans.Company;
 import com.stockBeans.Customer;
 import com.stockBeans.Shares;
 import com.stockDAO.StackJDBCTemplate;
+import com.stockDAO.Transactions;
 
 @Controller
 @Scope(value = "session")
@@ -43,7 +44,7 @@ public class StockController {
 			return modelAndView;
 
 		}
-		
+
 		String userName = request.getParameter("name");
 		String password = request.getParameter("password");
 
@@ -124,15 +125,15 @@ public class StockController {
 		if (customer == null) {
 			return new ModelAndView("index", "message", "You must login to view this page");
 		}
-		customer=jdbcTemplate.getCustomer(customer.getCustomerId());
+		customer = jdbcTemplate.getCustomer(customer.getCustomerId());
 		session.setAttribute("loggedUser", customer);
-		
+
 		ModelAndView modelAndView = new ModelAndView();
 		modelAndView.addObject("customer", customer);
 		modelAndView.addObject("message", message);
 		modelAndView.setViewName("trading");
 		System.out.println(customer.toString());
-		
+
 		modelAndView.addObject("companyList", jdbcTemplate.listCompanies());
 
 		return modelAndView;
@@ -146,14 +147,13 @@ public class StockController {
 		String cmp_id = cmpid;
 
 		int num = jdbcTemplate.getShareNumbers(cust_id, cmp_id);
-		System.out.println("Number of shares: "+num);
-		return new String(""+num);
+		System.out.println("Number of shares: " + num);
+		return new String("" + num);
 	}
 
-	
 	@RequestMapping("/buyStocksForCompany")
 	public ModelAndView buyStocksForCompany(HttpServletRequest request, HttpServletResponse res) {
-		
+
 		if (session == null) {
 			return new ModelAndView("index", "message", "You must login to view this page");
 		}
@@ -163,30 +163,28 @@ public class StockController {
 		if (customer == null) {
 			return new ModelAndView("index", "message", "You must login to view this page");
 		}
-		
 
-		
 		String companyString = request.getParameter("cmpname");
 		System.out.println(companyString);
-		int cmpID=new Integer(companyString.split(",")[0]);
-		System.out.println("cmpID: "+cmpID);
-		
-		int numOfSharestoBuy =new Integer(request.getParameter("numofshare"));
-		
-		Company company=jdbcTemplate.getCompany(cmpID);
+		int cmpID = new Integer(companyString.split(",")[0]);
+		System.out.println("cmpID: " + cmpID);
+
+		int numOfSharestoBuy = new Integer(request.getParameter("numofshare"));
+
+		Company company = jdbcTemplate.getCompany(cmpID);
 		System.out.println(company.toString());
-		double shareValue=company.getShare_value();
-		double balance=customer.getBalance();
-		double requiredAmount=shareValue*numOfSharestoBuy;
-		
+		double shareValue = company.getShare_value();
+		double balance = customer.getBalance();
+		double requiredAmount = shareValue * numOfSharestoBuy;
+
 		ModelAndView modelAndView = new ModelAndView(new RedirectView("buySellStock"));
-		
+
 		if (balance >= requiredAmount) {
-			boolean success=jdbcTemplate.buyShres(customer.getCustomerId(),company.getCmp_id(),numOfSharestoBuy);
-			System.out.println("out put from jdbc: "+success);
+			boolean success = jdbcTemplate.buyShres(customer.getCustomerId(), company.getCmp_id(), numOfSharestoBuy);
+			System.out.println("out put from jdbc: " + success);
 			if (success) {
 				modelAndView.addObject("message", "Successfully bought the shares");
-			}else {		
+			} else {
 				modelAndView.addObject("message", "Error while transaction. Please try again");
 			}
 		}
@@ -194,11 +192,10 @@ public class StockController {
 		return modelAndView;
 
 	}
-	
-	
+
 	@RequestMapping("/sellStocksForCompany")
 	public ModelAndView sellStocksForCompany(HttpServletRequest request, HttpServletResponse res) {
-		
+
 		if (session == null) {
 			return new ModelAndView("index", "message", "You must login to view this page");
 		}
@@ -208,36 +205,62 @@ public class StockController {
 		if (customer == null) {
 			return new ModelAndView("index", "message", "You must login to view this page");
 		}
-		
 
-		
 		String companyString = request.getParameter("cmpName1");
 		System.out.println(companyString);
-		int cmpID=new Integer(companyString.split(",")[0]);
-		System.out.println("cmpID: "+cmpID);
-		
-		int numOfSharestoSell =new Integer(request.getParameter("numOfSharesToSell"));
+		int cmpID = new Integer(companyString.split(",")[0]);
+		System.out.println("cmpID: " + cmpID);
+
+		int numOfSharestoSell = new Integer(request.getParameter("numOfSharesToSell"));
 		System.out.println(numOfSharestoSell);
-		Company company=jdbcTemplate.getCompany(cmpID);
+		Company company = jdbcTemplate.getCompany(cmpID);
 		System.out.println(company.toString());
-		
-		int numberOfSharesCustHave=jdbcTemplate.getShareNumbers(new String(""+customer.getCustomerId()), new String(""+cmpID));
-		
+
+		int numberOfSharesCustHave = jdbcTemplate.getShareNumbers(new String("" + customer.getCustomerId()),
+				new String("" + cmpID));
+
 		ModelAndView modelAndView = new ModelAndView(new RedirectView("buySellStock"));
-		
+
 		if (numberOfSharesCustHave >= numOfSharestoSell) {
-			boolean success=jdbcTemplate.sellShares(customer.getCustomerId(),company.getCmp_id(),numOfSharestoSell);
-			System.out.println("out put from jdbc: "+success);
+			boolean success = jdbcTemplate.sellShares(customer.getCustomerId(), company.getCmp_id(), numOfSharestoSell);
+			System.out.println("out put from jdbc: " + success);
 			if (success) {
 				modelAndView.addObject("message", "Successfully Sold the shares");
-			}else {		
+			} else {
 				modelAndView.addObject("message", "Error while transaction. Please try again");
 			}
-		}else {
-			modelAndView.addObject("message", "Number of shares entered is less than what you have. You have only "+numberOfSharesCustHave+" shares. ");
+		} else {
+			modelAndView.addObject("message", "Number of shares entered is less than what you have. You have only "
+					+ numberOfSharesCustHave + " shares. ");
 		}
 
 		return modelAndView;
 
 	}
+
+	@RequestMapping(value = "/viewLastTransactions", method = RequestMethod.GET)
+	public ModelAndView viewLastTransactions(ModelMap model) {
+		if (session == null) {
+			return new ModelAndView("index", "message", "You must login to view this page");
+		}
+
+		Customer customer = (Customer) session.getAttribute("loggedUser");
+
+		if (customer == null) {
+			return new ModelAndView("index", "message", "You must login to view this page");
+		}
+
+		List<Transactions> transactions = jdbcTemplate.listTransactions(customer.getCustomerId());
+		Object[] trArr= transactions.toArray(); 
+		
+		for (int i = 0; i < trArr.length; i++) {
+			System.out.println(((Transactions)trArr[i]).toString());
+		}
+		if (transactions.size() != 0) {
+			return new ModelAndView("viewTransactions", "transactionsList", transactions);
+		} else {
+			return new ModelAndView("viewTransactions", "message", "No transactions are available");
+		}
+	}
+
 }
